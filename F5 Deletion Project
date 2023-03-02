@@ -1,0 +1,10 @@
+---------- F5 Deletion Project ----------
+
+1. Read the csv file
+2. Pull the virtual details from csv
+3. Take the backup of F5
+4. List the virtual properties in one-line
+5. List the pool properties.
+6. List the profiles and persistence.
+7. Delete them
+8. Post validation.
