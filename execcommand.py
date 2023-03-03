@@ -12,7 +12,7 @@ def exec_cmd(ssh_client, command):
     stdin, stdout, stderr = ssh_client.exec_command(command)
     exec_result = stdout.read().decode()
     print("command executed successfully")
-    print(exec_result)
+    # print(exec_result)
     return exec_result
 
 # conn = sshconnect.connect(ip, user, passwrd)
