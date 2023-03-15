@@ -4,52 +4,82 @@ import csv
 
 vs_list = []
 
-def vipnames():
-    file_name = "/home/sandeep/Python-learning/F5-Deletion/Deletion-DED.csv"
-    with open(file_name, 'r') as f:
-        csv_reader = csv.reader(f)
-        next(csv_reader)
-        for line in csv_reader:
-            ip = line[1]
-            vip = line[2]
-            # vip = input("Enter the VIP: ")
-            find_vs = "tmsh list ltm virtual one-line |grep " + vip + " |gawk '{print $3}'"
-            vs = login.ssh_login(find_vs, ip).strip("\n")
-            vs_list.append(vs)
-            csvheaders = ["Device IP", "VIP", "VS-Name", "Pool", "Client-SSL", "Server-SSL", "Irule", "Persistence"]
-            with open("/home/sandeep/Python-learning/F5-Deletion/consolidated-VS.csv", 'a') as ccfile:
-                csv_writer = csv.writer(ccfile)
-                csv_writer.writerow([ip, vip, vs])
-                
+def vsconfig(ip, vip):
+    vs_name_cmd = "tmsh list ltm virtual one-line |grep " + vip + " |gawk '{print $3}'"
+    vs_name = login.ssh_login(vs_name_cmd, ip).strip("\n")
+    vs_details_cmd = "tmsh list ltm virtual " + vs_name + " one-line"
+    vs_details = (login.ssh_login(vs_details_cmd, ip).strip("\n")).split()
+
+    return vs_name, vs_details
 
 
-    return vs_list
 
-# vipnames()
+def persistence_in_vs(temp_vip_list):
+    if temp_vip_list.count("persist") > 0:
+        persistence_name = temp_vip_list[temp_vip_list.index("persist") + 2]
+        # print(persistence_name)
 
-# print(vs_list)
+    else:
+        persistence_name = "None - Check Irule"
+        # print(persistence_name)
 
-# def vsconfig():
-#     for v in vs_list:
-#         vs_out = "tmsh list ltm virtual " + v + " one-line"
-#         vs_config = login.ssh_login(vs_out, ip).strip("\n")
-#         print(vs_config)
-#         temp_vs = vs_config.split()
-#     # if ("clientside" in temp_vs) and ("serverside" in temp_vs):
-#     #     c_ssl = temp_vs[temp_vs.index("clientside") - 3]
-#     #     s_ssl = temp_vs[temp_vs.index("serverside") - 3]
+    return persistence_name 
 
-#     if temp_vs.count("clientside") > 0 and temp_vs.count("serverside") > 0 :
-#         c_ssl = temp_vs[temp_vs.index("clientside") - 3]
-#         s_ssl = temp_vs[temp_vs.index("serverside") - 3]
-#         print(c_ssl)
-#         print(s_ssl)
+# persistence_in_vs(temp_vip_list)
 
-#     elif temp_vs.count("clientside") > 0 and temp_vs.count("serverside") <= 0:
-#         c_ssl = temp_vs[temp_vs.index("clientside") - 3]
-#         print(c_ssl)
-#         print("No Server SSl associated")
+def pool_in_vs(temp_vip_list):
+    if temp_vip_list.count("pool") > 0:
+        pool_name = temp_vip_list[temp_vip_list.index("pool") + 1]
+        # print(pool_name)
 
-#     elif temp_vs.count("clientside") <= 0 and temp_vs.count("serverside") <= 0:
-#         print("No Client SSl associated")
-#         print("No Server SSl associated")
+    else:
+        pool_name = "None - Check Irule"
+        # print(pool_name)
+
+    return pool_name
+
+# poolname = pool_in_vs(temp_vip_list)
+
+def clientssl_in_vs(temp_vip_list):
+    if temp_vip_list.count("clientside") > 0:
+        clientssl_name = temp_vip_list[temp_vip_list.index("clientside") - 3]
+        # print(clientssl_name)
+
+    else:
+        clientssl_name = "None - Check Irule"
+        # print(clientssl_name)
+
+    return clientssl_name 
+
+# clientssl_in_vs(temp_vip_list)
+
+def serverssl_in_vs(temp_vip_list):
+    if temp_vip_list.count("serverside") > 0:
+        serverssl_name = temp_vip_list[temp_vip_list.index("serverside") - 3]
+        # print(serverssl_name)
+
+    else:
+        serverssl_name = "None - Check Irule"
+        # print(serverssl_name)
+
+    return serverssl_name 
+
+# serverssl_in_vs(temp_vip_list)
+
+with open("Deletion-DED.csv", "r") as f:
+    csv_reader = csv.reader(f)
+    next(csv_reader)
+    for row in csv_reader:
+        ip = row[1]
+        vip = row[2]
+        vip_name, vip_details_list = vsconfig(ip, vip)
+        vs_list.append(vip_details_list)
+        pool_name, clientssl_name, serverssl_name, persistence_name = pool_in_vs(vip_details_list), clientssl_in_vs(vip_details_list), serverssl_in_vs(vip_details_list), persistence_in_vs(vip_details_list)
+        # print(vip_name)
+        # print(vip_details_list)
+        print("**********")
+        print("**********")
+        print(pool_name, clientssl_name, serverssl_name, persistence_name)
+        print("**********")
+        print("**********")
+

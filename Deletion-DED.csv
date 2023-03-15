@@ -1,3 +1,3 @@
-Action,Host,Virtual Server,VIP Name
-Delete,192.168.8.60,10.10.20.55:https,test-vip-443
-Delete,192.168.8.60,10.10.20.55:vop,test-vip-4433
+Action,Host,Virtual-Server,VIP-Name,Pool-Name,Profile-Client-SSL,Profile-Server-SSL,Profile-Persistence,Irules,Monitors
+Delete,192.168.8.60,10.10.20.55:https,,,,,,,
+Delete,192.168.8.60,10.10.20.55:vop,,,,,,,
